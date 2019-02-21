@@ -11,7 +11,8 @@ public class SortTest {
         Util.shuffle(arr);
 //        new InsertionSort().sort(arr);
 //        new SelectionSort().sort(arr);
-        new ShellSort().sort(arr);
+//        new ShellSort().sort(arr);
+        new MergeSort().sort(arr);
         System.out.println("是否有序：" + Util.sorted(arr));
     }
 }
