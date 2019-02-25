@@ -44,4 +44,21 @@ public class Util {
         }
         return true;
     }
+
+    /**
+     * 找到最小的2次幂k，保证k>=n
+     *
+     * @param n
+     * @return
+     */
+    public static int nextPowerOf2(int n) {
+        n--;
+        n |= n >> 1;
+        n |= n >> 2;
+        n |= n >> 4;
+        n |= n >> 8;
+        n |= n >> 16;
+        n++;
+        return n;
+    }
 }
