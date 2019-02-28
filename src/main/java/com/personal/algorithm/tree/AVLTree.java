@@ -2,7 +2,7 @@ package com.personal.algorithm.tree;
 
 /**
  * AVL 树
- * <p>
+ *
  *  1. 左子树(B)的左儿子(D)添加节点F,进行右旋.旋转点左子树
  *       A                      B
  *      / \                    / \
@@ -38,23 +38,110 @@ package com.personal.algorithm.tree;
  *     D   E                          B   D   F
  *         \
  *          F
- * @param <T>
+ *
  */
-public class AVLTree<T> {
+public class AVLTree<T extends Comparable<T>> {
+    private AVLNode<T> root;
+
     private int height(AVLNode<T> node) {
-        return node == null ? 0 : node.height;
+        return node == null ? -1 : node.height;
     }
 
 
-    private AVLNode<T> leftRoate(AVLNode<T> node)
-    {
+    /**
+     * 左旋
+     *
+     * @param node
+     * @return
+     */
+    private AVLNode<T> leftRotate(AVLNode<T> node) {
         if (node == null) return null;
         AVLNode<T> right = node.right;
         node.right = right.left;
         right.left = node;
 
-        // TODO 更新height
+        // 更新height
+        node.height = 1 + Math.max(height(node.left), height(node.right));
+        right.height = 1 + Math.max(height(right.left), height(right.right));
         return right;
+    }
+
+    /**
+     * 右旋
+     *
+     * @param node
+     * @return
+     */
+    private AVLNode<T> rightRotate(AVLNode<T> node) {
+        if (node == null) return null;
+        AVLNode<T> left = node.left;
+        node.left = left.right;
+        left.right = node;
+
+        // 更新height
+        node.height = 1 + Math.max(height(node.left), height(node.right));
+        left.height = 1 + Math.max(height(left.left), height(left.right));
+        return left;
+    }
+
+    /**
+     * 节点的平衡因子
+     *
+     * @param node
+     * @return
+     */
+    private int getBalance(AVLNode<T> node) {
+        if (node == null)
+            return 0;
+        return height(node.left) - height(node.right);
+    }
+
+
+    public void insert(T element) {
+        if (element == null)
+            return;
+        insert(root, element);
+    }
+
+    private AVLNode<T> insert(AVLNode<T> node, T element) {
+        if (node == null) {
+            return new AVLNode<>(element, null, null);
+        }
+
+        int cmp = element.compareTo(node.element);
+        if (cmp < 0) {
+            node.left = insert(node.left, element);
+        } else if (cmp > 0) {
+            node.right = insert(node.right, element);
+        } else {
+            // do nothing
+            return node;
+        }
+
+        node.height = 1 + Math.max(height(node.left), height(node.right));
+        int balance = getBalance(node);
+        if (balance > 1) {
+            int result = element.compareTo(node.left.element);
+            if (result < 1) {
+                // 左左, 右旋
+                return rightRotate(node);
+            } else {
+                // 左右, 先左旋后右旋
+                node.left = leftRotate(node.left);
+                return rightRotate(node);
+            }
+        } else if (balance < 1) {
+            int result = element.compareTo(node.right.element);
+            if (result < 1) {
+                // 右左
+                node.right = rightRotate(node.right);
+                return leftRotate(node);
+            } else {
+                // 右右
+                return leftRotate(node);
+            }
+        }
+        return node;
 
     }
 
@@ -68,7 +155,7 @@ public class AVLTree<T> {
             this.element = element;
             this.left = left;
             this.right = right;
-            this.height = 1;
+            this.height = 0;
         }
     }
 }
